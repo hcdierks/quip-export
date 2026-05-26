@@ -12,14 +12,14 @@ def test_export_markdown_creates_file(tmp_path, sample_html):
     export_markdown(sample_html, out)
     assert out.exists()
     content = out.read_text()
-    assert "Test Document" in content
-    assert "paragraph" in content
+    assert "Quarterly Report" in content
+    assert "Revenue" in content
 
 
 def test_export_markdown_heading_style(tmp_path, sample_html):
     out = tmp_path / "out.md"
     export_markdown(sample_html, out)
-    assert "# Test Document" in out.read_text()
+    assert "# Quarterly Report" in out.read_text()
 
 
 def test_export_docx_creates_file(tmp_path, sample_html):
@@ -36,4 +36,4 @@ def test_export_docx_contains_heading(tmp_path, sample_html):
     export_docx(sample_html, out)
     doc = Document(out)
     headings = [p.text for p in doc.paragraphs if p.style.name.startswith("Heading")]
-    assert any("Test Document" in h for h in headings)
+    assert any("Quarterly Report" in h for h in headings)

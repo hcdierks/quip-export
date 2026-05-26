@@ -13,6 +13,11 @@ dependencies = [
     "markdownify>=0.13",
     "python-docx>=1.1",
     "weasyprint>=62",
+    "openpyxl>=3.1",
+    "python-pptx>=1.0",
+    "beautifulsoup4>=4.12",
+    "lxml>=5.0",
+    "tomli>=2.0; python_version < '3.11'",
 ]
 
 [project.scripts]
@@ -33,6 +38,13 @@ dev = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "--cov=quip_export --cov-report=term-missing"
+markers = [
+    "unit: Fast, isolated unit tests",
+    "functional: Multi-component functional tests (mocked at system boundary)",
+    "integration: Full pipeline tests with fully mocked Quip API",
+    "nonfunctional: Performance, security, and resilience tests",
+    "slow: Tests that take >1s; excluded from normal CI with -m 'not slow'",
+]
 
 [tool.coverage.run]
 source = ["src"]
