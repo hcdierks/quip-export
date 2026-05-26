@@ -15,10 +15,11 @@ _KNOWN_CLASSES = {"document", "spreadsheet", "slides", "chat", "code"}
 
 def discover_folders(client: Any) -> FolderTree:
     """Walk the full folder tree reachable by the authenticated user."""
-    user_resp = client.get_current_user()
-    cu = user_resp["current_user"]
-    root_ids: list[str] = [cu["private_folder_id"]] + list(
-        cu.get("shared_folder_ids", [])
+    cu = client.get_current_user()
+    root_ids: list[str] = (
+        [cu["private_folder_id"]]
+        + list(cu.get("shared_folder_ids", []))
+        + list(cu.get("group_folder_ids", []))
     )
 
     index: dict[str, FolderNode] = {}
