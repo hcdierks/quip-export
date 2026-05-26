@@ -45,6 +45,9 @@ class QuipClient:
     def get_folder(self, folder_id: str) -> dict[str, Any]:
         return self._get(f"/folders/{folder_id}")  # type: ignore[return-value]
 
+    def get_current_user(self) -> dict[str, Any]:
+        return self._get("/users/current")  # type: ignore[return-value]
+
     def get_blob(self, thread_id: str, blob_name: str) -> bytes:
         response = self._http.get(f"/blob/{thread_id}/{blob_name}")
         if response.status_code != 200:
