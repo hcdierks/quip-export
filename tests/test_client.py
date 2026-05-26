@@ -26,7 +26,7 @@ def test_get_thread_success(sample_thread):
     )
     with QuipClient(token="fake-token") as client:
         result = client.get_thread("abc123")
-    assert result["thread"]["id"] == "abc123"
+    assert result["thread"]["id"] == sample_thread["thread"]["id"]
 
 
 @respx.mock
