@@ -60,4 +60,4 @@ def validate_token(token: str) -> dict[str, Any]:
     if resp.status_code in (401, 403):
         raise QuipAuthError(f"Invalid token (HTTP {resp.status_code})")
     resp.raise_for_status()
-    return resp.json()["current_user"]
+    return resp.json()

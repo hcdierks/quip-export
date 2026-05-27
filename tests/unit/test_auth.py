@@ -91,7 +91,7 @@ class TestValidateToken:
     @respx.mock
     def test_valid_token_returns_user_info(self):
         respx.get("https://platform.quip.com/1/users/current").mock(
-            return_value=httpx.Response(200, json={"current_user": {"id": "u1", "name": "Test"}})
+            return_value=httpx.Response(200, json={"id": "u1", "name": "Test"})
         )
         user = validate_token("valid_token")
         assert user["id"] == "u1"
