@@ -25,7 +25,8 @@ def _tree_with_threads(*thread_ids_by_folder: tuple[str, list[str]]) -> FolderTr
 
 
 def _thread_resp(thread_id: str, title: str, thread_class: str, html: str = "<p>x</p>") -> dict:
-    return {"thread": {"id": thread_id, "title": title, "type": thread_class, "thread_class": thread_class}, "html": html}
+    # Real API: thread_class is always "document"; type carries the actual content type
+    return {"thread": {"id": thread_id, "title": title, "type": thread_class, "thread_class": "document"}, "html": html}
 
 
 class TestListAndClassify:
@@ -45,6 +46,23 @@ class TestListAndClassify:
         tree = _tree_with_threads(("f1", ["t1"]))
         respx.get(f"{QUIP_BASE}/threads/t1").mock(
             return_value=httpx.Response(200, json=_thread_resp("t1", "Budget", "spreadsheet"))
+        )
+        with QuipClient(token="tok") as client:
+            results = list_and_classify(client, tree)
+        assert results[0].thread_class == "spreadsheet"
+
+    @respx.mock
+    def test_spreadsheet_with_real_api_shape_thread_class_always_document(self):
+        """Regression for #21: real API sets thread_class='document' for all types;
+        type field carries the actual content type and must take precedence."""
+        tree = _tree_with_threads(("f1", ["t1"]))
+        respx.get(f"{QUIP_BASE}/threads/t1").mock(
+            return_value=httpx.Response(200, json={
+                "thread": {
+                    "id": "t1", "title": "Budget", "thread_class": "document", "type": "spreadsheet"
+                },
+                "html": "<table><tr><td>1</td></tr></table>",
+            })
         )
         with QuipClient(token="tok") as client:
             results = list_and_classify(client, tree)

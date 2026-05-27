@@ -166,7 +166,7 @@ def make_thread_response(
             "id": thread_id,
             "title": title,
             "type": thread_class,
-            "thread_class": thread_class,
+            "thread_class": "document",  # Real API: always "document" regardless of content type
         },
         "html": html,
     }
