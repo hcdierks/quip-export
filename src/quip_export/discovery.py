@@ -82,7 +82,7 @@ def list_and_classify(client: Any, tree: FolderTree) -> list[ClassifiedThread]:
             continue
 
         thread = data["thread"]
-        raw_class = thread.get("thread_class") or thread.get("type", "")
+        raw_class = (thread.get("type") or thread.get("thread_class", "")).lower()
         if raw_class not in _KNOWN_CLASSES:
             log.warning("Unknown thread class %r for %s", raw_class, thread_id)
             raw_class = "unknown"

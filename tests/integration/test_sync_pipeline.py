@@ -41,8 +41,9 @@ def _folder(folder_id: str, title: str, child_folder_ids: list[str] | None = Non
 
 
 def _thread(thread_id: str, title: str, thread_class: str, html: str) -> dict:
+    # Real API: thread_class is always "document"; type carries the actual content type
     return {
-        "thread": {"id": thread_id, "title": title, "thread_class": thread_class, "type": thread_class},
+        "thread": {"id": thread_id, "title": title, "thread_class": "document", "type": thread_class},
         "html": html,
     }
 
