@@ -20,14 +20,17 @@ HTML_DOC = "<html><body><h1>My Report</h1><p>Content here.</p></body></html>"
 HTML_SHEET = "<html><body><table><tr><th>Name</th><th>Val</th></tr><tr><td>Alice</td><td>42</td></tr></table></body></html>"
 
 
-def _user(private_id: str = "f_private", shared_ids: list[str] | None = None) -> dict:
+def _user(
+    private_id: str = "f_private",
+    shared_ids: list[str] | None = None,
+    group_ids: list[str] | None = None,
+) -> dict:
     return {
-        "current_user": {
-            "id": "u1",
-            "name": "Test User",
-            "private_folder_id": private_id,
-            "shared_folder_ids": shared_ids or [],
-        }
+        "id": "u1",
+        "name": "Test User",
+        "private_folder_id": private_id,
+        "shared_folder_ids": shared_ids or [],
+        "group_folder_ids": group_ids or [],
     }
 
 
@@ -163,6 +166,30 @@ class TestFullPipeline:
         result = runner.invoke(app, ["sync", "--output", str(tmp_path), "--token", "test_token"])
 
         assert "exported" in result.output.lower() or "done" in result.output.lower()
+
+
+    @respx.mock
+    def test_group_folder_discovered_and_exported(self, tmp_path):
+        """group_folder_ids must be walked just like private/shared roots."""
+        respx.get(f"{QUIP_BASE}/users/current").mock(
+            return_value=httpx.Response(200, json=_user("f_private", group_ids=["f_group"]))
+        )
+        respx.get(f"{QUIP_BASE}/folders/f_private").mock(
+            return_value=httpx.Response(200, json=_folder("f_private", "Private"))
+        )
+        respx.get(f"{QUIP_BASE}/folders/f_group").mock(
+            return_value=httpx.Response(200, json=_folder("f_group", "Group", thread_ids=["t_group"]))
+        )
+        respx.get(f"{QUIP_BASE}/threads/t_group").mock(
+            return_value=httpx.Response(200, json=_thread("t_group", "Group Doc", "document", HTML_DOC))
+        )
+
+        result = runner.invoke(app, ["sync", "--output", str(tmp_path), "--token", "test_token"])
+
+        assert result.exit_code == 0
+        files = list(tmp_path.rglob("*.*"))
+        doc_files = [f for f in files if f.suffix in (".docx", ".md")]
+        assert len(doc_files) >= 1
 
 
 # ---------------------------------------------------------------------------

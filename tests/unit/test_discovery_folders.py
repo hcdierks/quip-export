@@ -13,14 +13,17 @@ from quip_export.models import FolderTree
 QUIP_BASE = "https://platform.quip.com/1"
 
 
-def _mock_user(private_id: str = "f_private", shared_ids: list[str] | None = None):
+def _mock_user(
+    private_id: str = "f_private",
+    shared_ids: list[str] | None = None,
+    group_ids: list[str] | None = None,
+):
     return {
-        "current_user": {
-            "id": "u1",
-            "name": "User",
-            "private_folder_id": private_id,
-            "shared_folder_ids": shared_ids or [],
-        }
+        "id": "u1",
+        "name": "User",
+        "private_folder_id": private_id,
+        "shared_folder_ids": shared_ids or [],
+        "group_folder_ids": group_ids or [],
     }
 
 
@@ -167,7 +170,7 @@ class TestDiscoverFolders:
             return {"folder": {"id": folder_id, "title": folder_id}, "children": [{"folder_id": "f1"}]}
 
         def fake_get_current_user():
-            return {"current_user": {"id": "u", "name": "u", "private_folder_id": "f1", "shared_folder_ids": []}}
+            return {"id": "u", "name": "u", "private_folder_id": "f1", "shared_folder_ids": [], "group_folder_ids": []}
 
         from unittest.mock import MagicMock
         client = MagicMock()
@@ -176,6 +179,24 @@ class TestDiscoverFolders:
 
         tree = discover_folders(client)
         assert "f1" in tree.index
+
+    @respx.mock
+    def test_group_folder_ids_included_as_roots(self):
+        """group_folder_ids from the API must be discovered alongside private/shared."""
+        respx.get(f"{QUIP_BASE}/users/current").mock(
+            return_value=httpx.Response(200, json=_mock_user("f_private", group_ids=["f_group"]))
+        )
+        respx.get(f"{QUIP_BASE}/folders/f_private").mock(
+            return_value=httpx.Response(200, json=_mock_folder("f_private", "Private"))
+        )
+        respx.get(f"{QUIP_BASE}/folders/f_group").mock(
+            return_value=httpx.Response(200, json=_mock_folder("f_group", "Group"))
+        )
+        with QuipClient(token="tok") as client:
+            tree = discover_folders(client)
+        assert "f_private" in tree.index
+        assert "f_group" in tree.index
+        assert len(tree.roots) == 2
 
     @respx.mock
     def test_folder_with_both_threads_and_children(self):

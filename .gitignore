@@ -38,3 +38,6 @@ Thumbs.db
 # Secrets
 .env
 *.env
+
+# Claude Code local settings (may contain shell commands with tokens baked in)
+.claude/
