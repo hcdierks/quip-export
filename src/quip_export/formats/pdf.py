@@ -4,7 +4,6 @@ from pathlib import Path
 
 import weasyprint
 
-
 _CSS = weasyprint.CSS(string="""
     body { font-family: sans-serif; font-size: 12pt; margin: 2cm; }
     h1, h2, h3 { color: #1a1a1a; }

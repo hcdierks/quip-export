@@ -2,10 +2,7 @@
 
 from __future__ import annotations
 
-from pathlib import Path
-from unittest.mock import MagicMock, patch
-
-import pytest
+from unittest.mock import patch
 
 from quip_export.exporter import export_classified_thread
 from quip_export.models import DuplicateRecord
@@ -15,8 +12,11 @@ class TestMultiFolderExport:
     def test_single_folder_thread_written_once(
         self, tmp_path, doc_thread, folder_path_map, html_document
     ):
-        with patch("quip_export.exporter.export_with_fallback", return_value=tmp_path / "Root" / "doc.docx") as mock_exp:
-            records = export_classified_thread(doc_thread, html_document, folder_path_map)
+        with patch(
+            "quip_export.exporter.export_with_fallback",
+            return_value=tmp_path / "Root" / "doc.docx",
+        ) as mock_exp:
+            export_classified_thread(doc_thread, html_document, folder_path_map)
         assert mock_exp.call_count == 1
 
     def test_single_folder_thread_no_duplicate_record(
@@ -50,7 +50,9 @@ class TestMultiFolderExport:
             return path
 
         with patch("quip_export.exporter.export_with_fallback", side_effect=fake_export):
-            dup_record = export_classified_thread(multi_folder_thread, html_document, folder_path_map)
+            dup_record = export_classified_thread(
+                multi_folder_thread, html_document, folder_path_map
+            )
         assert isinstance(dup_record, DuplicateRecord)
         assert len(dup_record.paths) == 2
 
@@ -63,7 +65,9 @@ class TestMultiFolderExport:
             return path
 
         with patch("quip_export.exporter.export_with_fallback", side_effect=fake_export):
-            dup_record = export_classified_thread(three_folder_thread, html_document, folder_path_map)
+            dup_record = export_classified_thread(
+                three_folder_thread, html_document, folder_path_map
+            )
         assert dup_record is not None
         assert len(dup_record.paths) == 3
 
@@ -81,15 +85,22 @@ class TestMultiFolderExport:
             return path
 
         with patch("quip_export.exporter.export_with_fallback", side_effect=fake_export):
-            dup_record = export_classified_thread(multi_folder_thread, html_document, folder_path_map)
+            dup_record = export_classified_thread(
+                multi_folder_thread, html_document, folder_path_map
+            )
         # Only one path (the successful one) should be in the record
         assert dup_record is None or len(dup_record.paths) == 1
 
     def test_all_copies_fail_returns_none_no_record(
         self, tmp_path, multi_folder_thread, folder_path_map, html_document
     ):
-        with patch("quip_export.exporter.export_with_fallback", side_effect=OSError("total failure")):
-            dup_record = export_classified_thread(multi_folder_thread, html_document, folder_path_map)
+        with patch(
+            "quip_export.exporter.export_with_fallback",
+            side_effect=OSError("total failure"),
+        ):
+            dup_record = export_classified_thread(
+                multi_folder_thread, html_document, folder_path_map
+            )
         assert dup_record is None
 
     def test_orphaned_folder_id_skipped_with_warning(
@@ -123,7 +134,9 @@ class TestMultiFolderExport:
             return path
 
         with patch("quip_export.exporter.export_with_fallback", side_effect=fake_export):
-            dup_record = export_classified_thread(three_folder_thread, html_document, folder_path_map)
+            dup_record = export_classified_thread(
+                three_folder_thread, html_document, folder_path_map
+            )
         # 2 of 3 succeeded
         assert dup_record is not None
         assert len(dup_record.paths) == 2

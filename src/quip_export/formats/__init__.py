@@ -8,8 +8,8 @@ from typing import Callable
 from quip_export.formats.docx import export_docx
 from quip_export.formats.markdown import export_markdown
 from quip_export.formats.pdf import export_pdf
-from quip_export.formats.xlsx import export_xlsx
 from quip_export.formats.pptx import export_pptx
+from quip_export.formats.xlsx import export_xlsx
 
 
 @dataclass(frozen=True)

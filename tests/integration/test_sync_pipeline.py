@@ -2,11 +2,7 @@
 
 from __future__ import annotations
 
-from pathlib import Path
-from unittest.mock import patch
-
 import httpx
-import pytest
 import respx
 from typer.testing import CliRunner
 
@@ -17,7 +13,12 @@ runner = CliRunner(mix_stderr=False)
 QUIP_BASE = "https://platform.quip.com/1"
 
 HTML_DOC = "<html><body><h1>My Report</h1><p>Content here.</p></body></html>"
-HTML_SHEET = "<html><body><table><tr><th>Name</th><th>Val</th></tr><tr><td>Alice</td><td>42</td></tr></table></body></html>"
+HTML_SHEET = (
+    "<html><body>"
+    "<table><tr><th>Name</th><th>Val</th></tr>"
+    "<tr><td>Alice</td><td>42</td></tr></table>"
+    "</body></html>"
+)
 
 
 def _user(
@@ -34,7 +35,12 @@ def _user(
     }
 
 
-def _folder(folder_id: str, title: str, child_folder_ids: list[str] | None = None, thread_ids: list[str] | None = None) -> dict:
+def _folder(
+    folder_id: str,
+    title: str,
+    child_folder_ids: list[str] | None = None,
+    thread_ids: list[str] | None = None,
+) -> dict:
     children = [{"folder_id": f} for f in (child_folder_ids or [])]
     children += [{"thread_id": t} for t in (thread_ids or [])]
     return {"folder": {"id": folder_id, "title": title}, "children": children}
@@ -43,7 +49,9 @@ def _folder(folder_id: str, title: str, child_folder_ids: list[str] | None = Non
 def _thread(thread_id: str, title: str, thread_class: str, html: str) -> dict:
     # Real API: thread_class is always "document"; type carries the actual content type
     return {
-        "thread": {"id": thread_id, "title": title, "thread_class": "document", "type": thread_class},
+        "thread": {
+            "id": thread_id, "title": title, "thread_class": "document", "type": thread_class
+        },
         "html": html,
     }
 
@@ -59,10 +67,14 @@ class TestFullPipeline:
             return_value=httpx.Response(200, json=_user("f_private"))
         )
         respx.get(f"{QUIP_BASE}/folders/f_private").mock(
-            return_value=httpx.Response(200, json=_folder("f_private", "Private", thread_ids=["t_doc"]))
+            return_value=httpx.Response(
+                200, json=_folder("f_private", "Private", thread_ids=["t_doc"])
+            )
         )
         respx.get(f"{QUIP_BASE}/threads/t_doc").mock(
-            return_value=httpx.Response(200, json=_thread("t_doc", "My Report", "document", HTML_DOC))
+            return_value=httpx.Response(
+                200, json=_thread("t_doc", "My Report", "document", HTML_DOC)
+            )
         )
 
         result = runner.invoke(app, ["sync", "--output", str(tmp_path), "--token", "test_token"])
@@ -78,10 +90,14 @@ class TestFullPipeline:
             return_value=httpx.Response(200, json=_user("f_private"))
         )
         respx.get(f"{QUIP_BASE}/folders/f_private").mock(
-            return_value=httpx.Response(200, json=_folder("f_private", "Private", thread_ids=["t_doc"]))
+            return_value=httpx.Response(
+                200, json=_folder("f_private", "Private", thread_ids=["t_doc"])
+            )
         )
         respx.get(f"{QUIP_BASE}/threads/t_doc").mock(
-            return_value=httpx.Response(200, json=_thread("t_doc", "My Report", "document", HTML_DOC))
+            return_value=httpx.Response(
+                200, json=_thread("t_doc", "My Report", "document", HTML_DOC)
+            )
         )
 
         runner.invoke(app, ["sync", "--output", str(tmp_path), "--token", "test_token"])
@@ -110,16 +126,22 @@ class TestFullPipeline:
             return_value=httpx.Response(200, json=_user("f_private", ["f_shared"]))
         )
         respx.get(f"{QUIP_BASE}/folders/f_private").mock(
-            return_value=httpx.Response(200, json=_folder("f_private", "Private Docs", thread_ids=["t_doc"]))
+            return_value=httpx.Response(
+                200, json=_folder("f_private", "Private Docs", thread_ids=["t_doc"])
+            )
         )
         respx.get(f"{QUIP_BASE}/folders/f_shared").mock(
-            return_value=httpx.Response(200, json=_folder("f_shared", "Shared Docs", thread_ids=["t_sheet"]))
+            return_value=httpx.Response(
+                200, json=_folder("f_shared", "Shared Docs", thread_ids=["t_sheet"])
+            )
         )
         respx.get(f"{QUIP_BASE}/threads/t_doc").mock(
             return_value=httpx.Response(200, json=_thread("t_doc", "Report", "document", HTML_DOC))
         )
         respx.get(f"{QUIP_BASE}/threads/t_sheet").mock(
-            return_value=httpx.Response(200, json=_thread("t_sheet", "Budget", "spreadsheet", HTML_SHEET))
+            return_value=httpx.Response(
+                200, json=_thread("t_sheet", "Budget", "spreadsheet", HTML_SHEET)
+            )
         )
 
         result = runner.invoke(app, ["sync", "--output", str(tmp_path), "--token", "test_token"])
@@ -158,10 +180,14 @@ class TestFullPipeline:
             return_value=httpx.Response(200, json=_user("f_private"))
         )
         respx.get(f"{QUIP_BASE}/folders/f_private").mock(
-            return_value=httpx.Response(200, json=_folder("f_private", "Private", thread_ids=["t_doc"]))
+            return_value=httpx.Response(
+                200, json=_folder("f_private", "Private", thread_ids=["t_doc"])
+            )
         )
         respx.get(f"{QUIP_BASE}/threads/t_doc").mock(
-            return_value=httpx.Response(200, json=_thread("t_doc", "My Doc", "document", HTML_DOC))
+            return_value=httpx.Response(
+                200, json=_thread("t_doc", "My Doc", "document", HTML_DOC)
+            )
         )
 
         result = runner.invoke(app, ["sync", "--output", str(tmp_path), "--token", "test_token"])
@@ -179,10 +205,14 @@ class TestFullPipeline:
             return_value=httpx.Response(200, json=_folder("f_private", "Private"))
         )
         respx.get(f"{QUIP_BASE}/folders/f_group").mock(
-            return_value=httpx.Response(200, json=_folder("f_group", "Group", thread_ids=["t_group"]))
+            return_value=httpx.Response(
+                200, json=_folder("f_group", "Group", thread_ids=["t_group"])
+            )
         )
         respx.get(f"{QUIP_BASE}/threads/t_group").mock(
-            return_value=httpx.Response(200, json=_thread("t_group", "Group Doc", "document", HTML_DOC))
+            return_value=httpx.Response(
+                200, json=_thread("t_group", "Group Doc", "document", HTML_DOC)
+            )
         )
 
         result = runner.invoke(app, ["sync", "--output", str(tmp_path), "--token", "test_token"])
@@ -206,13 +236,19 @@ class TestDryRunIntegration:
             return_value=httpx.Response(200, json=_user("f_private"))
         )
         respx.get(f"{QUIP_BASE}/folders/f_private").mock(
-            return_value=httpx.Response(200, json=_folder("f_private", "Private", thread_ids=["t_doc"]))
+            return_value=httpx.Response(
+                200, json=_folder("f_private", "Private", thread_ids=["t_doc"])
+            )
         )
         respx.get(f"{QUIP_BASE}/threads/t_doc").mock(
-            return_value=httpx.Response(200, json=_thread("t_doc", "My Doc", "document", HTML_DOC))
+            return_value=httpx.Response(
+                200, json=_thread("t_doc", "My Doc", "document", HTML_DOC)
+            )
         )
 
-        result = runner.invoke(app, ["sync", "--output", str(out), "--dry-run", "--token", "test_token"])
+        result = runner.invoke(
+            app, ["sync", "--output", str(out), "--dry-run", "--token", "test_token"]
+        )
 
         assert result.exit_code == 0
         assert not out.exists()
@@ -223,13 +259,20 @@ class TestDryRunIntegration:
             return_value=httpx.Response(200, json=_user("f_private"))
         )
         respx.get(f"{QUIP_BASE}/folders/f_private").mock(
-            return_value=httpx.Response(200, json=_folder("f_private", "Private", thread_ids=["t_doc"]))
+            return_value=httpx.Response(
+                200, json=_folder("f_private", "Private", thread_ids=["t_doc"])
+            )
         )
         respx.get(f"{QUIP_BASE}/threads/t_doc").mock(
-            return_value=httpx.Response(200, json=_thread("t_doc", "My Doc", "document", HTML_DOC))
+            return_value=httpx.Response(
+                200, json=_thread("t_doc", "My Doc", "document", HTML_DOC)
+            )
         )
 
-        result = runner.invoke(app, ["sync", "--output", str(tmp_path), "--dry-run", "--token", "test_token"])
+        result = runner.invoke(
+            app,
+            ["sync", "--output", str(tmp_path), "--dry-run", "--token", "test_token"],
+        )
 
         assert "document" in result.output
         assert "1" in result.output

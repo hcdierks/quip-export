@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
-
 from quip_export.formats import FORMAT_MAP, get_format
 
 
@@ -45,7 +43,6 @@ class TestFormatMap:
         assert get_format("SPREADSHEET").extension == get_format("spreadsheet").extension
 
     def test_format_map_is_importable_constant(self):
-        assert FORMAT_MAP is not None
         assert isinstance(FORMAT_MAP, dict)
         assert "document" in FORMAT_MAP
 

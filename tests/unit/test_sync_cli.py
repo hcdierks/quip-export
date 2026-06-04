@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-import pytest
 from typer.testing import CliRunner
 
 from quip_export.cli import app
+from quip_export.client import QuipAPIError
 
 runner = CliRunner(mix_stderr=False)
 
@@ -33,7 +32,9 @@ def _make_tree(folder_ids: list[str] | None = None):
 def _make_threads(n: int = 1):
     from quip_export.models import ClassifiedThread
     return [
-        ClassifiedThread(thread_id=f"t{i}", title=f"Doc {i}", thread_class="document", folder_ids=["f1"])
+        ClassifiedThread(
+            thread_id=f"t{i}", title=f"Doc {i}", thread_class="document", folder_ids=["f1"]
+        )
         for i in range(1, n + 1)
     ]
 
@@ -174,7 +175,8 @@ class TestPartialFailure:
 
 class TestDiscoveryFailure:
     def test_discovery_failure_exits_2(self, tmp_path):
-        with patch("quip_export.cli.discover_folders", side_effect=Exception("boom")), \
+        disc_err = QuipAPIError(503, "service unavailable")
+        with patch("quip_export.cli.discover_folders", side_effect=disc_err), \
              patch("quip_export.cli.QuipClient", _mock_client_ctx()):
             result = runner.invoke(app, ["sync", "--output", str(tmp_path)] + TOKEN_ARGS)
         assert result.exit_code == 2
@@ -226,7 +228,7 @@ class TestDryRun:
              patch("quip_export.cli.QuipClient", _mock_client_ctx()):
             mock_disc.return_value = _make_tree()
             mock_cls.return_value = _make_threads(3)
-            result = runner.invoke(
+            runner.invoke(
                 app, ["sync", "--output", str(out), "--dry-run"] + TOKEN_ARGS
             )
         assert not out.exists()

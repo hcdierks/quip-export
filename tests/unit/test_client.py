@@ -25,17 +25,17 @@ class TestClientConstruction:
     def test_uses_env_token_when_no_flag(self, monkeypatch):
         monkeypatch.setenv("QUIP_TOKEN", "env_token")
         client = QuipClient()
-        assert client is not None
+        assert "env_token" in client._http.headers.get("authorization", "")
         client.close()
 
     def test_flag_token_used(self):
         client = QuipClient(token="explicit_token")
-        assert client is not None
+        assert "explicit_token" in client._http.headers.get("authorization", "")
         client.close()
 
     def test_context_manager_closes_on_exit(self):
         with QuipClient(token="tok") as client:
-            assert client is not None
+            assert client._http is not None
 
 
 class TestGetThread:
@@ -53,9 +53,8 @@ class TestGetThread:
         respx.get(f"{QUIP_BASE}/threads/bad").mock(
             return_value=httpx.Response(403, text="Forbidden")
         )
-        with QuipClient(token="tok") as client:
-            with pytest.raises(QuipAPIError) as exc_info:
-                client.get_thread("bad")
+        with QuipClient(token="tok") as client, pytest.raises(QuipAPIError) as exc_info:
+            client.get_thread("bad")
         assert exc_info.value.status_code == 403
 
     @respx.mock
@@ -63,9 +62,8 @@ class TestGetThread:
         respx.get(f"{QUIP_BASE}/threads/gone").mock(
             return_value=httpx.Response(404, text="Not Found")
         )
-        with QuipClient(token="tok") as client:
-            with pytest.raises(QuipAPIError) as exc_info:
-                client.get_thread("gone")
+        with QuipClient(token="tok") as client, pytest.raises(QuipAPIError) as exc_info:
+            client.get_thread("gone")
         assert exc_info.value.status_code == 404
 
 
@@ -85,9 +83,8 @@ class TestGetFolder:
         respx.get(f"{QUIP_BASE}/folders/private").mock(
             return_value=httpx.Response(403, text="Forbidden")
         )
-        with QuipClient(token="tok") as client:
-            with pytest.raises(QuipAPIError) as exc_info:
-                client.get_folder("private")
+        with QuipClient(token="tok") as client, pytest.raises(QuipAPIError) as exc_info:
+            client.get_folder("private")
         assert exc_info.value.status_code == 403
 
 

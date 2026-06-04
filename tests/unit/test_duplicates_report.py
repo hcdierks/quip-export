@@ -6,8 +6,6 @@ import stat
 from pathlib import Path
 from unittest.mock import MagicMock
 
-import pytest
-
 from quip_export.models import DuplicateRecord
 from quip_export.tracking import write_duplicates_report
 

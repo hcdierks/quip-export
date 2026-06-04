@@ -2,9 +2,6 @@
 
 from __future__ import annotations
 
-from pathlib import Path
-from unittest.mock import patch
-
 import pytest
 from docx import Document
 
@@ -82,7 +79,7 @@ class TestExportDocxEdgeCases:
         export_docx(html_empty, out)
         assert out.exists()
         doc = Document(out)
-        assert doc is not None
+        assert doc.paragraphs is not None
 
     def test_malformed_html_does_not_raise(self, tmp_path, html_malformed):
         out = tmp_path / "malformed.docx"

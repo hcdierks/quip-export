@@ -14,7 +14,6 @@ import pytest
 
 from quip_export.models import ClassifiedThread, DuplicateRecord, FolderNode, FolderTree
 
-
 # ---------------------------------------------------------------------------
 # FolderNode / FolderTree builders
 # ---------------------------------------------------------------------------
