@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import httpx
-import pytest
 import respx
 
 from quip_export.client import QuipClient
@@ -55,10 +54,14 @@ class TestDiscoverFolders:
             return_value=httpx.Response(200, json=_mock_user("f_root"))
         )
         respx.get(f"{QUIP_BASE}/folders/f_root").mock(
-            return_value=httpx.Response(200, json=_mock_folder("f_root", "Root", child_folder_ids=["f_child"]))
+            return_value=httpx.Response(
+                200, json=_mock_folder("f_root", "Root", child_folder_ids=["f_child"])
+            )
         )
         respx.get(f"{QUIP_BASE}/folders/f_child").mock(
-            return_value=httpx.Response(200, json=_mock_folder("f_child", "Child", thread_ids=["t1"]))
+            return_value=httpx.Response(
+                200, json=_mock_folder("f_child", "Child", thread_ids=["t1"])
+            )
         )
         with QuipClient(token="tok") as client:
             tree = discover_folders(client)
@@ -122,7 +125,9 @@ class TestDiscoverFolders:
             return_value=httpx.Response(200, json=_mock_user("f_root"))
         )
         respx.get(f"{QUIP_BASE}/folders/f_root").mock(
-            return_value=httpx.Response(200, json=_mock_folder("f_root", "Root", child_folder_ids=["f_locked"]))
+            return_value=httpx.Response(
+                200, json=_mock_folder("f_root", "Root", child_folder_ids=["f_locked"])
+            )
         )
         respx.get(f"{QUIP_BASE}/folders/f_locked").mock(
             return_value=httpx.Response(403, text="Forbidden")
@@ -138,7 +143,9 @@ class TestDiscoverFolders:
             return_value=httpx.Response(200, json=_mock_user("f_root"))
         )
         respx.get(f"{QUIP_BASE}/folders/f_root").mock(
-            return_value=httpx.Response(200, json=_mock_folder("f_root", "Root", child_folder_ids=["f_gone"]))
+            return_value=httpx.Response(
+                200, json=_mock_folder("f_root", "Root", child_folder_ids=["f_gone"])
+            )
         )
         respx.get(f"{QUIP_BASE}/folders/f_gone").mock(
             return_value=httpx.Response(404, text="Not Found")
@@ -167,10 +174,16 @@ class TestDiscoverFolders:
             call_count["n"] += 1
             if call_count["n"] > 20:
                 raise AssertionError("Cycle detection failed: too many API calls")
-            return {"folder": {"id": folder_id, "title": folder_id}, "children": [{"folder_id": "f1"}]}
+            return {
+                "folder": {"id": folder_id, "title": folder_id},
+                "children": [{"folder_id": "f1"}],
+            }
 
         def fake_get_current_user():
-            return {"id": "u", "name": "u", "private_folder_id": "f1", "shared_folder_ids": [], "group_folder_ids": []}
+            return {
+                "id": "u", "name": "u", "private_folder_id": "f1",
+                "shared_folder_ids": [], "group_folder_ids": [],
+            }
 
         from unittest.mock import MagicMock
         client = MagicMock()
@@ -204,7 +217,10 @@ class TestDiscoverFolders:
             return_value=httpx.Response(200, json=_mock_user("f1"))
         )
         respx.get(f"{QUIP_BASE}/folders/f1").mock(
-            return_value=httpx.Response(200, json=_mock_folder("f1", "Mixed", child_folder_ids=["f2"], thread_ids=["t1"]))
+            return_value=httpx.Response(
+                200,
+                json=_mock_folder("f1", "Mixed", child_folder_ids=["f2"], thread_ids=["t1"]),
+            )
         )
         respx.get(f"{QUIP_BASE}/folders/f2").mock(
             return_value=httpx.Response(200, json=_mock_folder("f2", "Child"))

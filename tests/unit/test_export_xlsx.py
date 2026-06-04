@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import stat
 
-import pytest
 import openpyxl
+import pytest
 
 from quip_export.formats.xlsx import export_xlsx
 

@@ -92,7 +92,9 @@ class TestCreateDirectoryStructure:
         # Two sibling folders that sanitise to the same name
         child_a = FolderNode(id="fa", title="Reports", parent_id="root", children=[], thread_ids=[])
         child_b = FolderNode(id="fb", title="Reports", parent_id="root", children=[], thread_ids=[])
-        root = FolderNode(id="root", title="Root", parent_id=None, children=[child_a, child_b], thread_ids=[])
+        root = FolderNode(
+            id="root", title="Root", parent_id=None, children=[child_a, child_b], thread_ids=[]
+        )
         tree = FolderTree(roots=[root], index={"root": root, "fa": child_a, "fb": child_b})
         mapping = create_directory_structure(tree, tmp_path)
         paths = {mapping["fa"].name, mapping["fb"].name}

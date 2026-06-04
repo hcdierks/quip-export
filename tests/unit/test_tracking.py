@@ -5,18 +5,16 @@ from __future__ import annotations
 import stat
 from pathlib import Path
 
-import pytest
-
 from quip_export.tracking import StateTracker
 
 
 class TestStateTrackerInit:
     def test_creates_run_state_on_init(self, tmp_path):
-        tracker = StateTracker(tmp_path)
+        StateTracker(tmp_path)
         assert (tmp_path / "run_state.md").exists()
 
     def test_run_state_contains_start_time(self, tmp_path):
-        tracker = StateTracker(tmp_path)
+        StateTracker(tmp_path)
         content = (tmp_path / "run_state.md").read_text()
         assert "start" in content.lower() or "202" in content
 
@@ -105,7 +103,7 @@ class TestStateTrackerExports:
         ro.mkdir()
         ro.chmod(stat.S_IREAD | stat.S_IEXEC)
         try:
-            tracker = StateTracker(ro)
+            StateTracker(ro)
             # Should not raise even if writes fail
         except (PermissionError, OSError):
             pass

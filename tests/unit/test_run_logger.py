@@ -2,14 +2,11 @@
 
 from __future__ import annotations
 
-import stat
 import re
+import stat
 from pathlib import Path
 
-import pytest
-
 from quip_export.run_logger import RunLogger
-
 
 # ISO 8601 UTC timestamp pattern like [2026-05-24T10:32:01Z]
 _TS = re.compile(r"\[\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z\]")
@@ -83,7 +80,7 @@ class TestLogFormat:
         with RunLogger(tmp_path) as log:
             log.warning("ctx", "first")
             log.warning("ctx", "second")
-        lines = [l for l in _read_log(tmp_path).splitlines() if l.strip()]
+        lines = [ln for ln in _read_log(tmp_path).splitlines() if ln.strip()]
         assert len(lines) == 2
 
 

@@ -6,7 +6,6 @@ from pathlib import Path
 
 from bs4 import BeautifulSoup, Tag
 from pptx import Presentation
-from pptx.util import Pt  # noqa: F401
 
 
 def _slide_has_content(body: Tag) -> bool:
