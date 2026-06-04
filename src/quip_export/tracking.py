@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
+import contextlib
 import re
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from quip_export.models import ClassifiedThread, DuplicateRecord, FolderTree
 
@@ -80,10 +81,8 @@ class StateTracker:
         self._safe_write(exports_path, existing + line)
 
     def _safe_write(self, dest: Path, content: str) -> None:
-        try:
+        with contextlib.suppress(OSError):
             _atomic_write(dest, content)
-        except OSError:
-            pass
 
 
 # ---------------------------------------------------------------------------

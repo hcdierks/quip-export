@@ -27,7 +27,8 @@ def _parse_formats(raw: list[str]) -> list[OutputFormat]:
     result = []
     for r in raw:
         if r not in valid:
-            raise typer.BadParameter(f"'{r}' is not a valid format. Choose from: {', '.join(valid)}")
+            choices = ", ".join(valid)
+            raise typer.BadParameter(f"'{r}' is not a valid format. Choose from: {choices}")
         result.append(OutputFormat(r))
     return result or list(OutputFormat)
 
@@ -36,8 +37,8 @@ def _parse_formats(raw: list[str]) -> list[OutputFormat]:
 def export(
     thread_ids: Annotated[list[str], typer.Argument(help="Quip thread ID(s) to export")],
     output: Annotated[Path, typer.Option(help="Output directory")] = Path("."),
-    formats: Annotated[Optional[list[str]], typer.Option(help="Output format(s): md, docx, pdf")] = None,
-    token: Annotated[Optional[str], typer.Option(help="Quip API token (or set QUIP_TOKEN)")] = None,
+    formats: Annotated[Optional[list[str]], typer.Option(help="Formats: md, docx, pdf")] = None,  # noqa: UP045
+    token: Annotated[Optional[str], typer.Option(help="Quip API token (or set QUIP_TOKEN)")] = None,  # noqa: UP045
 ) -> None:
     """Export one or more Quip threads to the specified formats."""
     fmt_list = _parse_formats(formats or [])
@@ -51,13 +52,13 @@ def export(
                     typer.echo(f"  -> {p}")
     except QuipAuthError as e:
         typer.echo(f"Auth error: {e}", err=True)
-        raise typer.Exit(1)
+        raise typer.Exit(1) from None
 
 
 @app.command()
 def sync(
     output: Annotated[Path, typer.Option(help="Output directory")] = Path("."),
-    token: Annotated[Optional[str], typer.Option(help="Quip API token (or set QUIP_TOKEN)")] = None,
+    token: Annotated[Optional[str], typer.Option(help="Quip API token (or set QUIP_TOKEN)")] = None,  # noqa: UP045
     verbose: Annotated[bool, typer.Option(help="Show INFO events on stdout")] = False,
     dry_run: Annotated[bool, typer.Option(help="Preview sync without writing any files")] = False,
 ) -> None:
@@ -72,7 +73,7 @@ def sync(
         resolved_token = resolve_token(flag_token=token)
     except QuipAuthError as exc:
         typer.echo(f"Auth error: {exc}", err=True)
-        raise typer.Exit(2)
+        raise typer.Exit(2) from None
 
     # ------------------------------------------------------------------
     # 2. Prepare output directory and state machinery (skipped for dry-run)
@@ -85,7 +86,7 @@ def sync(
             output.mkdir(parents=True, exist_ok=True)
         except PermissionError as exc:
             typer.echo(f"Cannot create output directory {output}: {exc}", err=True)
-            raise typer.Exit(2)
+            raise typer.Exit(2) from None
 
         logger = RunLogger(output, verbose=verbose, token=resolved_token)
         tracker = StateTracker(output)
@@ -108,12 +109,12 @@ def sync(
     try:
         with QuipClient(token=resolved_token) as client:
             tree = discover_folders(client)
-    except Exception as exc:
+    except (QuipAPIError, QuipAuthError) as exc:
         msg = f"Discovery failed: {exc}"
         typer.echo(msg, err=True)
         if logger:
             logger.error("sync", msg)
-        raise typer.Exit(2)
+        raise typer.Exit(2) from None
 
     if tracker:
         tracker.record_folders(tree)
@@ -130,12 +131,12 @@ def sync(
     try:
         with QuipClient(token=resolved_token) as client:
             threads = list_and_classify(client, tree)
-    except Exception as exc:
+    except (QuipAPIError, QuipAuthError) as exc:
         msg = f"Classification failed: {exc}"
         typer.echo(msg, err=True)
         if logger:
             logger.error("sync", msg)
-        raise typer.Exit(2)
+        raise typer.Exit(2) from None
 
     if tracker:
         for t in threads:

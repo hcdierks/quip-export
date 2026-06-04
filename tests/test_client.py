@@ -1,10 +1,10 @@
 """Tests for the Quip API client."""
 
+import httpx
 import pytest
 import respx
-import httpx
 
-from quip_export.client import QuipAuthError, QuipAPIError, QuipClient
+from quip_export.client import QuipAPIError, QuipAuthError, QuipClient
 
 
 def test_raises_without_token(monkeypatch):
@@ -34,7 +34,6 @@ def test_get_thread_raises_on_error():
     respx.get("https://platform.quip.com/1/threads/bad").mock(
         return_value=httpx.Response(403, text="Forbidden")
     )
-    with QuipClient(token="fake-token") as client:
-        with pytest.raises(QuipAPIError) as exc_info:
-            client.get_thread("bad")
+    with QuipClient(token="fake-token") as client, pytest.raises(QuipAPIError) as exc_info:
+        client.get_thread("bad")
     assert exc_info.value.status_code == 403

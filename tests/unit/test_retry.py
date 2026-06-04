@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import call, patch
+from unittest.mock import patch
 
 import httpx
 import pytest
@@ -23,9 +23,8 @@ class TestNoRetryOnSuccess:
         respx.get(f"{QUIP_BASE}/threads/t1").mock(
             return_value=httpx.Response(200, json={"thread": {"id": "t1"}})
         )
-        with patch("time.sleep") as mock_sleep:
-            with QuipClient(token="tok") as client:
-                client.get_thread("t1")
+        with patch("time.sleep") as mock_sleep, QuipClient(token="tok") as client:
+            client.get_thread("t1")
         mock_sleep.assert_not_called()
 
 
@@ -42,9 +41,8 @@ class TestRateLimitRetry:
                 httpx.Response(200, json={"thread": {"id": "t1"}}),
             ]
         )
-        with patch("time.sleep"):
-            with QuipClient(token="tok") as client:
-                result = client.get_thread("t1")
+        with patch("time.sleep"), QuipClient(token="tok") as client:
+            result = client.get_thread("t1")
         assert result["thread"]["id"] == "t1"
 
     @respx.mock
@@ -55,9 +53,8 @@ class TestRateLimitRetry:
                 httpx.Response(200, json={"thread": {"id": "t1"}}),
             ]
         )
-        with patch("time.sleep") as mock_sleep:
-            with QuipClient(token="tok") as client:
-                client.get_thread("t1")
+        with patch("time.sleep") as mock_sleep, QuipClient(token="tok") as client:
+            client.get_thread("t1")
         assert mock_sleep.call_count == 1
 
     @respx.mock
@@ -68,9 +65,8 @@ class TestRateLimitRetry:
                 httpx.Response(200, json={"thread": {"id": "t1"}}),
             ]
         )
-        with patch("time.sleep") as mock_sleep:
-            with QuipClient(token="tok") as client:
-                client.get_thread("t1")
+        with patch("time.sleep") as mock_sleep, QuipClient(token="tok") as client:
+            client.get_thread("t1")
         assert mock_sleep.call_count == 1
         assert mock_sleep.call_args[0][0] == pytest.approx(3.0)
 
@@ -79,10 +75,9 @@ class TestRateLimitRetry:
         respx.get(f"{QUIP_BASE}/threads/t1").mock(
             return_value=httpx.Response(429, text="RL")
         )
-        with patch("time.sleep"):
-            with QuipClient(token="tok") as client:
-                with pytest.raises(QuipAPIError) as exc_info:
-                    client.get_thread("t1")
+        with patch("time.sleep"), QuipClient(token="tok") as client:  # noqa: SIM117
+            with pytest.raises(QuipAPIError) as exc_info:
+                client.get_thread("t1")
         assert exc_info.value.status_code == 429
 
     @respx.mock
@@ -90,10 +85,9 @@ class TestRateLimitRetry:
         respx.get(f"{QUIP_BASE}/threads/t1").mock(
             return_value=httpx.Response(429, text="RL")
         )
-        with patch("time.sleep") as mock_sleep:
-            with QuipClient(token="tok") as client:
-                with pytest.raises(QuipAPIError):
-                    client.get_thread("t1")
+        with patch("time.sleep") as mock_sleep, QuipClient(token="tok") as client:  # noqa: SIM117
+            with pytest.raises(QuipAPIError):
+                client.get_thread("t1")
         assert mock_sleep.call_count == 5
 
     @respx.mock
@@ -105,7 +99,7 @@ class TestRateLimitRetry:
                 httpx.Response(200, json={"thread": {"id": "t1"}}),
             ]
         )
-        with patch("time.sleep"), caplog.at_level(logging.WARNING, logger="quip_export.client"):
+        with patch("time.sleep"), caplog.at_level(logging.WARNING, logger="quip_export.client"):  # noqa: SIM117
             with QuipClient(token="tok") as client:
                 client.get_thread("t1")
         assert any("429" in r.message or "retry" in r.message.lower() for r in caplog.records)
@@ -126,9 +120,8 @@ class TestServerErrorRetry:
                 httpx.Response(200, json={"thread": {"id": "t1"}}),
             ]
         )
-        with patch("time.sleep") as mock_sleep:
-            with QuipClient(token="tok") as client:
-                result = client.get_thread("t1")
+        with patch("time.sleep") as mock_sleep, QuipClient(token="tok") as client:
+            result = client.get_thread("t1")
         assert result["thread"]["id"] == "t1"
         assert mock_sleep.call_count == 3
 
@@ -137,10 +130,9 @@ class TestServerErrorRetry:
         respx.get(f"{QUIP_BASE}/threads/t1").mock(
             return_value=httpx.Response(500, text="Server error")
         )
-        with patch("time.sleep"):
-            with QuipClient(token="tok") as client:
-                with pytest.raises(QuipAPIError) as exc_info:
-                    client.get_thread("t1")
+        with patch("time.sleep"), QuipClient(token="tok") as client:  # noqa: SIM117
+            with pytest.raises(QuipAPIError) as exc_info:
+                client.get_thread("t1")
         assert exc_info.value.status_code == 500
 
     @respx.mock
@@ -152,9 +144,8 @@ class TestServerErrorRetry:
                 httpx.Response(200, json={"thread": {"id": "t1"}}),
             ]
         )
-        with patch("time.sleep"):
-            with QuipClient(token="tok") as client:
-                result = client.get_thread("t1")
+        with patch("time.sleep"), QuipClient(token="tok") as client:
+            result = client.get_thread("t1")
         assert result["thread"]["id"] == "t1"
 
     @respx.mock
@@ -163,10 +154,9 @@ class TestServerErrorRetry:
         respx.get(f"{QUIP_BASE}/threads/t1").mock(
             return_value=httpx.Response(503, text="err")
         )
-        with patch("time.sleep") as mock_sleep:
-            with QuipClient(token="tok") as client:
-                with pytest.raises(QuipAPIError):
-                    client.get_thread("t1")
+        with patch("time.sleep") as mock_sleep, QuipClient(token="tok") as client:  # noqa: SIM117
+            with pytest.raises(QuipAPIError):
+                client.get_thread("t1")
         delays = [c[0][0] for c in mock_sleep.call_args_list]
         assert len(delays) == 5
         # Each delay is roughly double the previous (within ±20% jitter)
@@ -184,10 +174,9 @@ class TestNonRetryable:
         respx.get(f"{QUIP_BASE}/threads/t1").mock(
             return_value=httpx.Response(401, text="Unauthorized")
         )
-        with patch("time.sleep") as mock_sleep:
-            with QuipClient(token="tok") as client:
-                with pytest.raises(QuipAPIError) as exc_info:
-                    client.get_thread("t1")
+        with patch("time.sleep") as mock_sleep, QuipClient(token="tok") as client:  # noqa: SIM117
+            with pytest.raises(QuipAPIError) as exc_info:
+                client.get_thread("t1")
         assert exc_info.value.status_code == 401
         mock_sleep.assert_not_called()
 
@@ -196,10 +185,9 @@ class TestNonRetryable:
         respx.get(f"{QUIP_BASE}/threads/t1").mock(
             return_value=httpx.Response(403, text="Forbidden")
         )
-        with patch("time.sleep") as mock_sleep:
-            with QuipClient(token="tok") as client:
-                with pytest.raises(QuipAPIError) as exc_info:
-                    client.get_thread("t1")
+        with patch("time.sleep") as mock_sleep, QuipClient(token="tok") as client:  # noqa: SIM117
+            with pytest.raises(QuipAPIError) as exc_info:
+                client.get_thread("t1")
         assert exc_info.value.status_code == 403
         mock_sleep.assert_not_called()
 
@@ -208,10 +196,9 @@ class TestNonRetryable:
         respx.get(f"{QUIP_BASE}/threads/t1").mock(
             return_value=httpx.Response(404, text="Not Found")
         )
-        with patch("time.sleep") as mock_sleep:
-            with QuipClient(token="tok") as client:
-                with pytest.raises(QuipAPIError) as exc_info:
-                    client.get_thread("t1")
+        with patch("time.sleep") as mock_sleep, QuipClient(token="tok") as client:  # noqa: SIM117
+            with pytest.raises(QuipAPIError) as exc_info:
+                client.get_thread("t1")
         assert exc_info.value.status_code == 404
         mock_sleep.assert_not_called()
 
@@ -220,10 +207,9 @@ class TestNonRetryable:
         respx.get(f"{QUIP_BASE}/threads/t1").mock(
             return_value=httpx.Response(400, text="Bad Request")
         )
-        with patch("time.sleep") as mock_sleep:
-            with QuipClient(token="tok") as client:
-                with pytest.raises(QuipAPIError):
-                    client.get_thread("t1")
+        with patch("time.sleep") as mock_sleep, QuipClient(token="tok") as client:  # noqa: SIM117
+            with pytest.raises(QuipAPIError):
+                client.get_thread("t1")
         mock_sleep.assert_not_called()
 
 
@@ -240,9 +226,8 @@ class TestTimeoutRetry:
                 httpx.Response(200, json={"thread": {"id": "t1"}}),
             ]
         )
-        with patch("time.sleep"):
-            with QuipClient(token="tok") as client:
-                result = client.get_thread("t1")
+        with patch("time.sleep"), QuipClient(token="tok") as client:
+            result = client.get_thread("t1")
         assert result["thread"]["id"] == "t1"
 
     @respx.mock
@@ -250,18 +235,16 @@ class TestTimeoutRetry:
         respx.get(f"{QUIP_BASE}/threads/t1").mock(
             side_effect=httpx.TimeoutException("timed out")
         )
-        with patch("time.sleep"):
-            with QuipClient(token="tok") as client:
-                with pytest.raises(QuipAPIError):
-                    client.get_thread("t1")
+        with patch("time.sleep"), QuipClient(token="tok") as client:  # noqa: SIM117
+            with pytest.raises(QuipAPIError):
+                client.get_thread("t1")
 
     @respx.mock
     def test_five_timeouts_sleeps_five_times(self):
         respx.get(f"{QUIP_BASE}/threads/t1").mock(
             side_effect=httpx.TimeoutException("timed out")
         )
-        with patch("time.sleep") as mock_sleep:
-            with QuipClient(token="tok") as client:
-                with pytest.raises(QuipAPIError):
-                    client.get_thread("t1")
+        with patch("time.sleep") as mock_sleep, QuipClient(token="tok") as client:  # noqa: SIM117
+            with pytest.raises(QuipAPIError):
+                client.get_thread("t1")
         assert mock_sleep.call_count == 5

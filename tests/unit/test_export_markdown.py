@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
-from quip_export.formats.markdown import export_markdown
 from quip_export.exporter import export_with_fallback
+from quip_export.formats.markdown import export_markdown
 
 
 class TestExportMarkdownPrimary:
@@ -52,7 +51,9 @@ class TestExportMarkdownPrimary:
 
 
 class TestExportWithFallback:
-    def test_chat_thread_uses_md_directly_no_primary_attempt(self, tmp_path, chat_thread, html_chat):
+    def test_chat_thread_uses_md_directly_no_primary_attempt(
+        self, tmp_path, chat_thread, html_chat
+    ):
         with patch("quip_export.exporter.export_docx") as mock_docx:
             export_with_fallback(html_chat, tmp_path / "chat.md", chat_thread.thread_class)
             mock_docx.assert_not_called()
@@ -77,7 +78,9 @@ class TestExportWithFallback:
     def test_xlsx_failure_falls_back_to_md(self, tmp_path, sheet_thread, html_spreadsheet):
         out_xlsx = tmp_path / "data.xlsx"
         with patch("quip_export.exporter.export_xlsx", side_effect=ValueError("parse error")):
-            result_path = export_with_fallback(html_spreadsheet, out_xlsx, sheet_thread.thread_class)
+            result_path = export_with_fallback(
+                html_spreadsheet, out_xlsx, sheet_thread.thread_class
+            )
         assert result_path.suffix == ".md"
 
     def test_pptx_failure_falls_back_to_md(self, tmp_path, slides_thread, html_slides):
@@ -91,11 +94,13 @@ class TestExportWithFallback:
         with patch("quip_export.exporter.export_docx", side_effect=OSError("fail")):
             result_path = export_with_fallback(html_document, out_docx, doc_thread.thread_class)
         content = result_path.read_text()
-        assert len(content) >= 0
+        assert len(content) > 0
 
     def test_both_primary_and_fallback_fail_raises(self, tmp_path, doc_thread, html_document):
         out_docx = tmp_path / "doc.docx"
-        with patch("quip_export.exporter.export_docx", side_effect=OSError("fail")), \
-             patch("quip_export.exporter.export_markdown", side_effect=OSError("also fail")):
-            with pytest.raises(Exception):
-                export_with_fallback(html_document, out_docx, doc_thread.thread_class)
+        with (  # noqa: SIM117
+            patch("quip_export.exporter.export_docx", side_effect=OSError("fail")),
+            patch("quip_export.exporter.export_markdown", side_effect=OSError("also fail")),
+            pytest.raises(OSError),
+        ):
+            export_with_fallback(html_document, out_docx, doc_thread.thread_class)

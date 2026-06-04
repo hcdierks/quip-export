@@ -1,10 +1,8 @@
 """Tests for output format exporters."""
 
-import pytest
-from pathlib import Path
 
-from quip_export.formats.markdown import export_markdown
 from quip_export.formats.docx import export_docx
+from quip_export.formats.markdown import export_markdown
 
 
 def test_export_markdown_creates_file(tmp_path, sample_html):

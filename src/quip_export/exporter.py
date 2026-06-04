@@ -7,8 +7,14 @@ from enum import Enum
 from pathlib import Path
 
 from quip_export.client import QuipClient
-from quip_export.formats import export_docx, export_markdown, export_pdf, export_pptx, export_xlsx
-from quip_export.formats import get_format
+from quip_export.formats import (
+    export_docx,
+    export_markdown,
+    export_pdf,
+    export_pptx,
+    export_xlsx,
+    get_format,
+)
 from quip_export.models import ClassifiedThread, DuplicateRecord
 
 log = logging.getLogger(__name__)
@@ -56,9 +62,6 @@ def export_with_fallback(html: str, output_path: Path, thread_class: str) -> Pat
 
     Returns the path of the file that was actually written (may differ in suffix
     from *output_path* when the primary exporter fails).
-
-    Each exporter is called by name so that tests can patch
-    ``quip_export.exporter.export_<fmt>`` without bypassing this function.
     """
     if thread_class in _MD_ONLY_CLASSES:
         md_path = output_path.with_suffix(".md")
@@ -96,8 +99,9 @@ def export_classified_thread(
     html: str,
     folder_path_map: dict[str, Path],
 ) -> DuplicateRecord | None:
-    """Write a thread to each of its folders, returning a DuplicateRecord when there are multiple copies.
+    """Write a thread to each of its folders.
 
+    Returns a DuplicateRecord when there are multiple copies.
     Skips folders not present in *folder_path_map* (logs a warning).
     Partial failures are tolerated; only successfully written paths are tracked.
     Returns None if zero or one copy was written.

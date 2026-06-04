@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import httpx
-import pytest
 import respx
 
 from quip_export.client import QuipClient
@@ -18,7 +17,9 @@ def _tree_with_threads(*thread_ids_by_folder: tuple[str, list[str]]) -> FolderTr
     nodes = []
     index = {}
     for folder_id, tids in thread_ids_by_folder:
-        node = FolderNode(id=folder_id, title=folder_id, parent_id=None, children=[], thread_ids=tids)
+        node = FolderNode(
+            id=folder_id, title=folder_id, parent_id=None, children=[], thread_ids=tids
+        )
         nodes.append(node)
         index[folder_id] = node
     return FolderTree(roots=nodes, index=index)
@@ -26,7 +27,12 @@ def _tree_with_threads(*thread_ids_by_folder: tuple[str, list[str]]) -> FolderTr
 
 def _thread_resp(thread_id: str, title: str, thread_class: str, html: str = "<p>x</p>") -> dict:
     # Real API: thread_class is always "document"; type carries the actual content type
-    return {"thread": {"id": thread_id, "title": title, "type": thread_class, "thread_class": "document"}, "html": html}
+    return {
+        "thread": {
+            "id": thread_id, "title": title, "type": thread_class, "thread_class": "document"
+        },
+        "html": html,
+    }
 
 
 class TestListAndClassify:
@@ -165,7 +171,6 @@ class TestListAndClassify:
 
     def test_returns_list_of_classified_thread_instances(self, single_folder_tree, mock_client):
         mock_client.get_thread.return_value = _thread_resp("t1", "Doc", "document")
-        from quip_export.models import FolderNode
         tree = _tree_with_threads(("f1", ["t1"]))
         mock_client.get_thread.return_value = _thread_resp("t1", "Doc", "document")
         results = list_and_classify(mock_client, tree)

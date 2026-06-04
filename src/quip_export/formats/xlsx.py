@@ -6,8 +6,8 @@ import logging
 from pathlib import Path
 
 import openpyxl
-from openpyxl.styles import Font
 from bs4 import BeautifulSoup, Tag
+from openpyxl.styles import Font
 
 log = logging.getLogger(__name__)
 

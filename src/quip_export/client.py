@@ -55,12 +55,10 @@ class QuipClient:
         )
 
     def _get(self, path: str, **params: Any) -> Any:
-        last_exc: Exception | None = None
         for attempt in range(_MAX_RETRIES + 1):
             try:
                 response = self._http.get(path, params=params)
             except httpx.TimeoutException as exc:
-                last_exc = exc
                 if attempt == _MAX_RETRIES:
                     raise QuipAPIError(-1, f"Network timeout after {_MAX_RETRIES} retries") from exc
                 delay = _backoff(attempt)
@@ -96,12 +94,6 @@ class QuipClient:
 
     def get_current_user(self) -> dict[str, Any]:
         return self._get("/users/current")  # type: ignore[return-value]
-
-    def get_blob(self, thread_id: str, blob_name: str) -> bytes:
-        response = self._http.get(f"/blob/{thread_id}/{blob_name}")
-        if response.status_code != 200:
-            raise QuipAPIError(response.status_code, response.text)
-        return response.content
 
     def close(self) -> None:
         self._http.close()
