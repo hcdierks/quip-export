@@ -6,7 +6,7 @@ import signal
 import sys
 from collections import Counter
 from pathlib import Path
-from typing import Annotated, Optional
+from typing import Annotated, Any, Optional
 
 import typer
 
@@ -214,7 +214,7 @@ def sync(
     raise typer.Exit(1 if failed else 0)
 
 
-def _print_dry_run_summary(tree: object, threads: list, output: Path) -> None:
+def _print_dry_run_summary(tree: object, threads: list[Any], output: Path) -> None:
     type_counts: Counter[str] = Counter(t.thread_class for t in threads)
     duplicate_count = sum(1 for t in threads if len(t.folder_ids) > 1)
     estimated_exports = sum(len(t.folder_ids) for t in threads)

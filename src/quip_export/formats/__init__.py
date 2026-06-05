@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Callable
+from typing import Any, Callable
 
 from quip_export.formats.docx import export_docx
 from quip_export.formats.markdown import export_markdown
@@ -15,7 +15,7 @@ from quip_export.formats.xlsx import export_xlsx
 @dataclass(frozen=True)
 class FormatSpec:
     extension: str
-    exporter: Callable
+    exporter: Callable[..., None]
 
 
 FORMAT_MAP: dict[str, FormatSpec] = {

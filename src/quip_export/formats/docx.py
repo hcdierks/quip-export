@@ -88,4 +88,4 @@ def export_docx(html: str, output_path: Path) -> None:
     doc = Document()
     root = lhtml.fromstring(html)
     _walk(root, doc)
-    doc.save(output_path)
+    doc.save(str(output_path))

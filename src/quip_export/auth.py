@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+from typing import cast
 
 CONFIG_PATH = Path.home() / ".config" / "quip-export" / "config.toml"
 
@@ -24,9 +25,9 @@ def resolve_token(flag_token: str | None = None) -> str:
     if CONFIG_PATH.exists():
         try:
             try:
-                import tomllib  # type: ignore[import-not-found]
+                import tomllib
             except ImportError:
-                import tomli as tomllib  # type: ignore[import-not-found,no-redef]
+                import tomli as tomllib  # type: ignore[no-redef]
 
             with open(CONFIG_PATH, "rb") as fh:
                 data = tomllib.load(fh)
@@ -35,7 +36,7 @@ def resolve_token(flag_token: str | None = None) -> str:
 
         token = data.get("token", "")
         if token:
-            return token
+            return cast(str, token)
 
     raise QuipAuthError(
         "No QUIP_TOKEN found. Set it via --token flag, QUIP_TOKEN env var, "

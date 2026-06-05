@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 from bs4 import BeautifulSoup, Tag
 from pptx import Presentation
@@ -24,7 +25,7 @@ def _build_body_lines(container: Tag) -> list[str]:
     return lines
 
 
-def _add_slide(prs: Presentation, title_text: str | None, body_lines: list[str]) -> None:
+def _add_slide(prs: Any, title_text: str | None, body_lines: list[str]) -> None:
     layout = prs.slide_layouts[1]  # Title and Content
     slide = prs.slides.add_slide(layout)
 
@@ -56,10 +57,10 @@ def export_pptx(html: str, output_path: Path) -> None:
             _add_slide(prs, title_text, body_lines)
     else:
         body = soup.find("body")
-        if body and _slide_has_content(body):  # type: ignore[arg-type]
+        if body and _slide_has_content(body):
             h1 = body.find("h1")
             title_text = h1.get_text(strip=True) if h1 else None
-            body_lines = _build_body_lines(body)  # type: ignore[arg-type]
+            body_lines = _build_body_lines(body)
             _add_slide(prs, title_text, body_lines)
 
-    prs.save(output_path)
+    prs.save(str(output_path))
