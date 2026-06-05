@@ -7,19 +7,18 @@ sequencing, large-tree performance baseline, and resource cleanup.
 from __future__ import annotations
 
 import time
-from unittest.mock import MagicMock, call, patch
+from unittest.mock import patch
 
 import httpx
 import pytest
 import respx
 
 from quip_export.client import (
+    _MAX_RETRIES,
     QuipAPIError,
     QuipClient,
-    _MAX_RETRIES,
     _backoff,
 )
-
 
 # ---------------------------------------------------------------------------
 # Retry count
@@ -34,9 +33,9 @@ class TestRetryCount:
         route = respx.get("https://platform.quip.com/1/threads/t1").mock(
             return_value=httpx.Response(503, text="unavailable")
         )
-        with patch("time.sleep"), QuipClient(token="tok") as client:
-            with pytest.raises(QuipAPIError) as exc_info:
-                client.get_thread("t1")
+        with patch("time.sleep"), QuipClient(token="tok") as client, \
+                pytest.raises(QuipAPIError) as exc_info:
+            client.get_thread("t1")
         assert exc_info.value.status_code == 503
         assert route.call_count == _MAX_RETRIES + 1
 
@@ -45,9 +44,9 @@ class TestRetryCount:
         route = respx.get("https://platform.quip.com/1/threads/t1").mock(
             return_value=httpx.Response(429, text="rate limited")
         )
-        with patch("time.sleep"), QuipClient(token="tok") as client:
-            with pytest.raises(QuipAPIError) as exc_info:
-                client.get_thread("t1")
+        with patch("time.sleep"), QuipClient(token="tok") as client, \
+                pytest.raises(QuipAPIError) as exc_info:
+            client.get_thread("t1")
         assert exc_info.value.status_code == 429
         assert route.call_count == _MAX_RETRIES + 1
 
@@ -56,9 +55,8 @@ class TestRetryCount:
         route = respx.get("https://platform.quip.com/1/threads/t1").mock(
             return_value=httpx.Response(404, text="not found")
         )
-        with QuipClient(token="tok") as client:
-            with pytest.raises(QuipAPIError) as exc_info:
-                client.get_thread("t1")
+        with QuipClient(token="tok") as client, pytest.raises(QuipAPIError) as exc_info:
+            client.get_thread("t1")
         assert exc_info.value.status_code == 404
         assert route.call_count == 1
 
@@ -67,9 +65,8 @@ class TestRetryCount:
         route = respx.get("https://platform.quip.com/1/threads/t1").mock(
             return_value=httpx.Response(403, text="forbidden")
         )
-        with QuipClient(token="tok") as client:
-            with pytest.raises(QuipAPIError) as exc_info:
-                client.get_thread("t1")
+        with QuipClient(token="tok") as client, pytest.raises(QuipAPIError) as exc_info:
+            client.get_thread("t1")
         assert exc_info.value.status_code == 403
         assert route.call_count == 1
 
@@ -95,9 +92,9 @@ class TestRetryCount:
             route = respx.get("https://platform.quip.com/1/threads/t1").mock(
                 return_value=httpx.Response(status, text="error")
             )
-            with patch("time.sleep"), QuipClient(token="tok") as client:
-                with pytest.raises(QuipAPIError):
-                    client.get_thread("t1")
+            with patch("time.sleep"), QuipClient(token="tok") as client, \
+                    pytest.raises(QuipAPIError):
+                client.get_thread("t1")
             assert route.call_count == _MAX_RETRIES + 1, (
                 f"Expected {_MAX_RETRIES + 1} calls for status {status}, "
                 f"got {route.call_count}"
@@ -203,10 +200,10 @@ class TestBackoffSequence:
         def capture_sleep(delay: float) -> None:
             sleep_delays.append(delay)
 
-        with patch("time.sleep", side_effect=capture_sleep):
-            with QuipClient(token="tok") as client:
-                with pytest.raises(QuipAPIError):
-                    client.get_thread("t1")
+        with patch("time.sleep", side_effect=capture_sleep), \
+                QuipClient(token="tok") as client, \
+                pytest.raises(QuipAPIError):
+            client.get_thread("t1")
 
         assert len(sleep_delays) == _MAX_RETRIES
         for i in range(1, len(sleep_delays)):

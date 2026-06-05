@@ -8,7 +8,6 @@ no internal quip_export modules are mocked.
 from __future__ import annotations
 
 import httpx
-import pytest
 import respx
 from typer.testing import CliRunner
 
