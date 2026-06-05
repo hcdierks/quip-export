@@ -24,6 +24,13 @@ jobs:
           python-version: "3.12"
           cache: pip
 
+      - name: Install WeasyPrint system dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y \
+            libpango-1.0-0 libpangoft2-1.0-0 libpangocairo-1.0-0 \
+            libgdk-pixbuf-2.0-0 libcairo2 libffi-dev shared-mime-info
+
       - name: Install dependencies
         run: make install
 
