@@ -47,7 +47,7 @@ def export_xlsx(html: str, output_path: Path) -> None:
     soup = BeautifulSoup(html, "lxml")
     wb = openpyxl.Workbook()
     # Remove the auto-created default sheet
-    wb.remove(wb.active)  # type: ignore[arg-type]
+    wb.remove(wb.active)
 
     sheet_divs = soup.find_all("div", class_="sheet")
     if sheet_divs:
@@ -56,12 +56,12 @@ def export_xlsx(html: str, output_path: Path) -> None:
             ws = wb.create_sheet(title=str(title))
             table = div.find("table")
             if table:
-                _write_table(ws, table)  # type: ignore[arg-type]
+                _write_table(ws, table)
     else:
         ws = wb.create_sheet(title="Sheet1")
         table = soup.find("table")
         if table:
-            _write_table(ws, table)  # type: ignore[arg-type]
+            _write_table(ws, table)
         else:
             log.warning("No table found in HTML for XLSX export")
 

@@ -15,7 +15,7 @@ from quip_export.formats.xlsx import export_xlsx
 @dataclass(frozen=True)
 class FormatSpec:
     extension: str
-    exporter: Callable
+    exporter: Callable[..., None]
 
 
 FORMAT_MAP: dict[str, FormatSpec] = {

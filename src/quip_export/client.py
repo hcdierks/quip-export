@@ -6,7 +6,7 @@ import logging
 import os
 import random
 import time
-from typing import Any
+from typing import Any, cast
 
 import httpx
 
@@ -38,7 +38,7 @@ def _backoff(attempt: int, retry_after: str | None = None) -> float:
             pass
     delay = _BASE_DELAY * (2 ** attempt)
     delay += delay * 0.1 * random.uniform(-1.0, 1.0)
-    return delay
+    return cast(float, delay)
 
 
 class QuipClient:
@@ -87,13 +87,13 @@ class QuipClient:
         raise QuipAPIError(-1, "Retry exhausted")  # pragma: no cover
 
     def get_thread(self, thread_id: str) -> dict[str, Any]:
-        return self._get(f"/threads/{thread_id}")  # type: ignore[return-value]
+        return cast(dict[str, Any], self._get(f"/threads/{thread_id}"))
 
     def get_folder(self, folder_id: str) -> dict[str, Any]:
-        return self._get(f"/folders/{folder_id}")  # type: ignore[return-value]
+        return cast(dict[str, Any], self._get(f"/folders/{folder_id}"))
 
     def get_current_user(self) -> dict[str, Any]:
-        return self._get("/users/current")  # type: ignore[return-value]
+        return cast(dict[str, Any], self._get("/users/current"))
 
     def close(self) -> None:
         self._http.close()
