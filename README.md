@@ -231,3 +231,25 @@ See [docs/architecture.md](docs/architecture.md) for the full module map and pip
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+## Latest release
+
+<!-- release-notes:start -->
+**f7d7dd0** — 2026-06-05T15:56:39.400469+00:00
+
+- audit: remove dead code, fix vacuous assertions, add PDF coverage, clean lint (d21dfc6)
+- Fix #21: use type field for thread classification; thread_class is always 'document' (1d49928)
+- Add .claude/ to .gitignore to prevent token leakage (c0d4fc2)
+- Add README and MIT license for public release (4e26230)
+- Fix #19: Quip API returns flat user object, not current_user-wrapped (8ad045c)
+
+[Full release notes](docs/release-notes/LATEST.md) · [All releases](docs/release-notes/)
+<!-- release-notes:end -->
+## Known issues
+
+<!-- known-issues:start -->
+- [#36](https://github.com/hcdierks/quip-export/issues/36) [security] DAST: not applicable — CLI/library, no network service
+- [#35](https://github.com/hcdierks/quip-export/issues/35) [security] SAST: Semgrep + pip-audit in CI
+
+[Full known issues list](docs/known-issues.md)
+<!-- known-issues:end -->
