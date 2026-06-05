@@ -41,3 +41,7 @@ Thumbs.db
 
 # Claude Code local settings (may contain shell commands with tokens baked in)
 .claude/
+
+# Local export output — never commit
+quip-backup/
+1
