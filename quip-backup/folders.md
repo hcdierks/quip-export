@@ -1,0 +1,127 @@
+# Discovered Folders
+
+- QaSAOAp5Qh3: Private
+- MNcAOAlQa1q: GE HealthCare
+- YATAOA5x5Wu: OnBoarding - CommandCenter
+- XcEAOAuyY85: Trash
+- dZZAOAEiaaJ: Kids Adoption
+- RZSAOAUoCRK: Will Henner
+- dAVAOAoV70y: Juliet Birthday 2021
+- IWUAOASL4Sp: Juliet Birthday 2018
+- UTCAOAfaJ75: DieQuaSwa
+- HfLAOAjXDe0: Church
+- MVWAOAJ0sdU: Home Bible Studies
+- fcAAOAFPm3G: House and Yard
+- UXcAOAQGLHx: Parents Only
+- CEXAOADUxKz: Our Companies
+- LBBAOA6bsDj: JuMed
+- AFeAOAMQUOO: Products
+- bfRAOAnVdT9: PU detection
+- BRQAOAEpZbk: Juliet School - Wound Care
+- ITGAOAsojQV: Henner School
+- aJfAOAK201d: UT Austin AI/ML
+- WVeAOAGCpbN: Classes
+- TbJAOAPX9L5: Module 6
+- FKXAOAPmLxG: Module 5
+- aFaAOAqcLdF: Project
+- dCPAOAsQCc7: Module 3
+- NaDAOA4zvyA: Project
+- TCTAOAcsAXI: Module 2
+- FZXAOAtnjRV: Project
+- EEcAOADf8Pf: Adoption
+- GcJAOA3eWlU: Henner N-400
+- HLfAOAYFTWz: Homes
+- bUeAOA2BqU8: Ghana
+- ccQAOAqWyJ0: Snoqualmie
+- IPBAOAZM2qR: Home Remodeling
+- MDRAOAZH5ID: Outdoor lighting
+- fDKAOA03ZW5: Juliet School - PLU
+- RJXAOAhzdLh: 2025 Summer
+- LafAOA0lgin: N530
+- NGWAOAYL3nQ: N596
+- RcUAOAHwuWy: Final Manuscript
+- RCJAOAPrsOF: Draft
+- SfQAOAbXi1B: Proposal and Outline
+- fPLAOAmmH9M: 2025 Spring
+- bfZAOAWZ0Zi: N531
+- ZFTAOAbT3QF: Proposal presentation
+- KJaAOAGtl6T: Project Proposal
+- cNaAOAb9Br2: Project Planning Aide
+- UWXAOAhUKfA: Needs Assessment
+- cGUAOARqEzy: Reflection 2
+- GBaAOAe2lyO: Reflection 1
+- BFJAOAqUWl9: N526
+- cMWAOA0FyTv: 2025 J-Term
+- AVdAOALSHpW: GNUR541
+- ERVAOA1w4ja: Prerequisites
+- WSZAOAIBeQt: Nutrition
+- PWZAOAHhqNG: Raw collections
+- NRJAOALgPwG: Nutrition Assignments
+- XRXAOAbN4Xi: Raw Work Assignment 3
+- aXdAOANDrwT: A&P2
+- KZRAOA3ZtCA: Discussions
+- GKYAOAx1zJ3: Psychology
+- YMEAOAPmmce: Interview
+- dOdAOARy8yD: Discussions
+- HSYAOATfXpG: Case Studies
+- WJXAOAtToA6: A&P1
+- XMGAOAzMgb1: Discussions
+- SYHAOARycfd: 2024 Spring
+- ANXAOACm5hI: N404
+- CcWAOACbobv: N401
+- YERAOAhJVLc: 2023 Fall
+- ISbAOAsec9C: N310 Scholarly Writing
+- GNMAOAGOIBt: Research Paper
+- UJKAOAiHtsc: N316
+- dJAAOAKKX0Q: N315
+- EcUAOAqP8h0: N314
+- dEEAOAr3Jnf: N311
+- SSHAOAcGkwQ: 2024 J-Term
+- XWXAOAOW40H: Oaxaca Trip
+- WENAOA8XYaL: 2024 Fall
+- OUEAOAjy6Lr: NUR523
+- RBeAOAhRBIZ: Roles Presentation
+- MeeAOArGEsQ: Five Year Career Plan
+- cbCAOATD82k: Reading assignments
+- EbJAOAQrJ4r: GNUR544
+- McCAOAdMAEV: Walk In My Shoes
+- KDcAOA0dIuM: Population Health Analysis
+- OeNAOAoKra8: GNUR525
+- PdWAOAUjnFI: Glossary
+- aFZAOAk05ft: Theory Analysis Presentation
+- VWQAOAEt7q9: Concept Analysis Paper
+- RdLAOANexdw: Sections
+- LTXAOAFL3CE: Archive
+- EIXAOAecrzO: Portfolio
+- LMWAOA3YGPf: Other people
+- FOKAOA3pQY9: Garrett Swanzy
+- UQBAOAn8biI: Parenting Plan changes
+- QaHAOAVc4NI: Mavis
+- QDbAOA8bEcp: Hobbies
+- cMBAOA3v4kM: Home automation
+- JFCAOAsGG3x: IKEA shelf smart lighting
+- VHdAOAju0ID: Offroad Trips
+- cMaAOAKdO8Q: Summer 2024
+- BIbAOAz3kBm: Model Railroad
+- UQMAOAPYqCL: Remote Controlled Flight
+- FSJAOA5DtmC: Kids School
+- MLAAOA0rUPE: Annica and Maceo College start
+- MAEAOAA8Rry: Philip - Running Start
+- PaFAOAvotvW: Philip - College Research
+- CFDAOATEt9z: Dad's research
+- eHLAOAI1dJE: MSHS
+- dUQAOACTj4U: CKMS
+- GAZAOAKJsGv: Shopping
+- XXFAOArJGAD: Vacations
+- deKAOAFDsNK: Cabo Oct 2025
+- PEOAOAzH5Vr: Cabo Oct 2021
+- CWNAOAZ5R51: Hawaii 2020
+- EVWAOAhcTCJ: Chicago 2020
+- NaOAOAahjgN: Germany 2021
+- BBEAOAKesOA: Parents Here 2020
+- WfXAOAKqVV6: New Orleans 2019
+- dQCAOAWhRTn: Las Vegas 2019
+- MPaAOAqe91G: Camping
+- TDfAOAQO67d: Victoria 2018
+- fVSAOADxBAK: Germany 2017
+- DBXAOAoqDvu: Ghana 2018
