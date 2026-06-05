@@ -85,6 +85,7 @@ make typecheck     # or: .venv/bin/mypy src
 
 ## Rules
 
+- Write all tests before production code (TDD). Test layer order: unit → functional → integration → nfr.
 - Always update tests and docs alongside every code change.
 - Never commit `.env` or any file containing a `QUIP_TOKEN`.
 - Keep `CLAUDE.md` up to date when adding new commands or changing the API.
