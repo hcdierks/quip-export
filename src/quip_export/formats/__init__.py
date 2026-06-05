@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Callable
+from typing import Callable
 
 from quip_export.formats.docx import export_docx
 from quip_export.formats.markdown import export_markdown
