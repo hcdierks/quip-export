@@ -10,9 +10,10 @@ Env vars (set by GitHub Actions):
 """
 import json
 import os
+import re
 import subprocess
-import urllib.request
 import urllib.error
+import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -20,8 +21,15 @@ ROOT = Path(__file__).parent.parent
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 
-def run(cmd: str) -> str:
-    return subprocess.check_output(cmd, shell=True, text=True).strip()
+def run(cmd: list[str]) -> str:
+    return subprocess.check_output(cmd, text=True).strip()
+
+
+def run_safe(cmd: list[str], default: str = "") -> str:
+    try:
+        return subprocess.check_output(cmd, text=True, stderr=subprocess.DEVNULL).strip()
+    except subprocess.CalledProcessError:
+        return default
 
 
 def gh_api(path: str) -> list:
@@ -42,20 +50,21 @@ def gh_api(path: str) -> list:
 
 # ── Collect data ─────────────────────────────────────────────────────────────
 
-sha       = os.environ.get("DEPLOY_SHA") or run("git rev-parse HEAD")
+sha       = os.environ.get("DEPLOY_SHA") or run(["git", "rev-parse", "HEAD"])
 short_sha = sha[:7]
 timestamp = datetime.now(timezone.utc).isoformat()
 repo      = os.environ.get("GH_REPO", "hcdierks/quip-export")
 
 try:
-    prev_tag  = run("git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo ''")
+    prev_tag  = run_safe(["git", "describe", "--tags", "--abbrev=0", "HEAD^"])
     git_range = f"{prev_tag}..HEAD" if prev_tag else "HEAD"
-    commit_log = run(f'git log {git_range} --pretty=format:"- %s (%h)" --no-merges')
+    commit_log = run(["git", "log", git_range, "--pretty=format:- %s (%h)", "--no-merges"])
 except subprocess.CalledProcessError:
-    commit_log = run('git log -20 --pretty=format:"- %s (%h)" --no-merges')
+    commit_log = run(["git", "log", "-20", "--pretty=format:- %s (%h)", "--no-merges"])
 
 try:
-    test_output = run("make test 2&>1 | tail -3")
+    result = subprocess.run(["make", "test"], capture_output=True, text=True)
+    test_output = "\n".join((result.stdout + result.stderr).splitlines()[-3:])
 except subprocess.CalledProcessError:
     test_output = "see CI log"
 
@@ -69,6 +78,11 @@ sec_lines    = [f"- [#{i['number']}]({i['html_url']}) {i['title']}"
 
 release_date     = timestamp[:10]
 release_filename = f"RELEASE-{release_date}-{short_sha}.md"
+issues_summary   = (
+    "\n".join(bug_lines + sec_lines)
+    if bug_lines or sec_lines
+    else f"_No known issues as of {timestamp}._"
+)
 
 release_notes = f"""# Release {short_sha} — {release_date}
 
@@ -91,7 +105,7 @@ release_notes = f"""# Release {short_sha} — {release_date}
 
 ## Known issues
 
-{chr(10).join(bug_lines + sec_lines) if bug_lines or sec_lines else f"_No known issues as of {timestamp}._"}
+{issues_summary}
 """
 
 (ROOT / "docs/release-notes").mkdir(parents=True, exist_ok=True)
@@ -140,15 +154,18 @@ latest_section = f"""## Latest release
 [Full release notes](docs/release-notes/LATEST.md) · [All releases](docs/release-notes/)
 <!-- release-notes:end -->"""
 
+issues_preview = (
+    "\n".join((bug_lines + sec_lines)[:5])
+    if bug_lines or sec_lines
+    else f"✅ No known issues as of {timestamp}."
+)
 issues_section = f"""## Known issues
 
 <!-- known-issues:start -->
-{chr(10).join((bug_lines + sec_lines)[:5]) if bug_lines or sec_lines else f"✅ No known issues as of {timestamp}."}
+{issues_preview}
 
 [Full known issues list](docs/known-issues.md)
 <!-- known-issues:end -->"""
-
-import re
 
 if "<!-- release-notes:start -->" in readme:
     readme = re.sub(
