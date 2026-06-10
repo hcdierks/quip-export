@@ -8,7 +8,7 @@ from typer.testing import CliRunner
 
 from quip_export.cli import app
 
-runner = CliRunner(mix_stderr=False)
+runner = CliRunner()
 
 QUIP_BASE = "https://platform.quip.com/1"
 
