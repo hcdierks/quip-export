@@ -9,7 +9,7 @@ from typer.testing import CliRunner
 from quip_export.cli import app
 from quip_export.client import QuipAPIError
 
-runner = CliRunner(mix_stderr=False)
+runner = CliRunner()
 
 # Shared token flag — avoids depending on os.environ with CliRunner
 TOKEN_ARGS = ["--token", "tok"]

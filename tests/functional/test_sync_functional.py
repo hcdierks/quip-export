@@ -13,7 +13,7 @@ from typer.testing import CliRunner
 
 from quip_export.cli import app
 
-runner = CliRunner(mix_stderr=False)
+runner = CliRunner()
 
 QUIP_BASE = "https://platform.quip.com/1"
 TOKEN_ARGS = ["--token", "tok"]
@@ -57,7 +57,7 @@ class TestAuthFailure:
     def test_missing_token_prints_auth_error(self, tmp_path, monkeypatch):
         monkeypatch.delenv("QUIP_TOKEN", raising=False)
         result = runner.invoke(app, ["sync", "--output", str(tmp_path)])
-        assert "auth" in result.stderr.lower() or "quip_token" in result.stderr.lower()
+        assert "auth" in result.output.lower() or "quip_token" in result.output.lower()
 
     def test_missing_token_no_output_dir_created(self, tmp_path, monkeypatch):
         monkeypatch.delenv("QUIP_TOKEN", raising=False)
@@ -395,7 +395,7 @@ class TestDiscoveryFailureMessages:
         result = runner.invoke(
             app, ["sync", "--output", str(tmp_path)] + TOKEN_ARGS
         )
-        assert result.stderr or "error" in result.output.lower()
+        assert "error" in result.output.lower()
 
     @respx.mock
     def test_discovery_403_exits_2(self, tmp_path):
