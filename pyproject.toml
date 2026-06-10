@@ -61,3 +61,7 @@ python_version = "3.11"
 strict = true
 mypy_path = "src"
 disable_error_code = ["import-untyped"]
+
+[[tool.mypy.overrides]]
+module = ["tomli"]
+ignore_missing_imports = true

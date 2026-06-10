@@ -8,6 +8,9 @@ on:
   schedule:
     - cron: '0 8 * * 1'
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   semgrep:
     name: Semgrep SAST
@@ -36,4 +39,7 @@ jobs:
           python-version: '3.12'
           cache: pip
       - run: make install
-      - run: pip install pip-audit && pip-audit --strict
+      - name: pip-audit (fail on any vulnerability)
+        run: |
+          pip install --upgrade "pip>=26.1.2" pip-audit
+          pip-audit --strict
